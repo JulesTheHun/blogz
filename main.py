@@ -23,7 +23,10 @@ def index():
         post = Blog.query.filter_by(id=id).first()
         return render_template('post.html', title=post.title, body=post.body)
 
-    posts = Blog.query.all()
+    posts = []
+    count = len(Blog.query.all())
+    for num in range(count, 0, -1):
+        posts.append(Blog.query.filter_by(id=num).first())
     return render_template('blog.html', posts = posts)
 
 @app.route('/newpost', methods=['GET', 'POST'])
