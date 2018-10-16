@@ -9,6 +9,23 @@
         <a href="/blog">Main Blog Page</a>
         <a href="/newpost">Add a Blog Entry</a>
     </nav>
+    <div style='float: right'>
+        {% if 'user' in session %}
+            <form action="/logout" method="post">
+                <input type="submit" value="Log Out" />
+            </form>
+        {% else %}
+            <a href="login">login</a>
+        {% endif %}
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            {% for message in messages %}
+                <p class={{category}}>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     {% block content %}
     {% endblock %}
 </body>
