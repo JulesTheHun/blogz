@@ -6,6 +6,7 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:root@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
+app.secret_key = "lolcopter"
 
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,10 +39,10 @@ def login():
             session['user'] = username
             return redirect('/newpost')
         elif not(user):
-            flash("User does not exit", 'error')
+            flash('User does not exit', 'error')
             return render_template('login.html')
         else:
-            flash("User password incorrect", 'error')
+            flash('User password incorrect', 'error')
             return render_template('login.html')
 
     return render_template('login.html')
@@ -54,8 +55,8 @@ def signup():
         verify = request.form['verify']
         name_message = ""
 
-        if username_error(username) or password_error(password) or match_error(password, verify):
-            if username_error(username):
+        if name_error(username) or password_error(password) or match_error(password, verify):
+            if name_error(username):
                 username = ""
                 name_message = "Please enter a valid username"
             return render_template('signup.html', username=username, name_error=name_error(username), name_message=name_message, password_error=password_error(password), match_error=match_error(password, verify))
