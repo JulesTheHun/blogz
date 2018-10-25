@@ -95,16 +95,22 @@ def match_error(password, verify):
         return True
 
 @app.route('/blog', methods=['GET', 'POST'])
-def index():
+def blogs():
+
     id = request.args.get("id")
     if id:
         post = Blog.query.filter_by(id=id).first()
-        return render_template('post.html', title=post.title, body=post.body)
+        return render_template('post.html', title=post.title, body=post.body, user=post.owner)
 
+    
     posts = []
-    count = len(Blog.query.all())
-    for num in range(count, 0, -1):
-        posts.append(Blog.query.filter_by(id=num).first())
+    user = request.args.get("user")
+    if user:
+        posts = Blog.query.filter_by(owner_id=user)
+    else:
+        count = len(Blog.query.all())
+        for num in range(count, 0, -1):
+            posts.append(Blog.query.filter_by(id=num).first())
     return render_template('blog.html', posts = posts)
 
 @app.route('/newpost', methods=['GET', 'POST'])
@@ -113,6 +119,7 @@ def add_post():
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
+        user = User.query.filter_by(username=session['user']).first()
         title_error = True
         body_error = True
         if title:
@@ -123,7 +130,7 @@ def add_post():
         if title_error or body_error:
             return render_template("newpost.html", title=title, body=body, title_error=title_error, body_error=body_error)
         else:
-            new_post = Blog(title, body)
+            new_post = Blog(title, body, user)
             db.session.add(new_post)
             db.session.commit()
             return redirect("/blog?id={0}".format(new_post.id))
@@ -131,10 +138,22 @@ def add_post():
 
     return render_template("newpost.html")
 
+@app.route('/index')
+def index():
+    users = User.query.all()
+
+    return render_template("index.html", users=users)
+
 @app.route('/logout', methods=['POST'])
 def logout():
     del session['user']
     return redirect('/blog')
+
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'index', 'blogs', 'signup']
+    if request.endpoint not in allowed_routes and 'user' not in session:
+        return redirect('/login')
 
 if __name__ == "__main__":
     app.run()

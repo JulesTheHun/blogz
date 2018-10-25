@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Build a Blog</h1>
+<h1>Blogz</h1>
 {% for post in posts %}
-    <h2><a href="./blog?id={{post.id}}">{{post.title}}</a></h2>
+    <h2><a href="/blog?id={{post.id}}">{{post.title}}</a></h2>
     <p>{{post.body}}</p>
+    <p>By <a href="/blog?user={{post.owner.id}}">{{post.owner.username}}</a></p>
     <hr />
 {% endfor %}
 {% endblock %}
