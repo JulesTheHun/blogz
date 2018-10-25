@@ -106,7 +106,13 @@ def blogs():
     posts = []
     user = request.args.get("user")
     if user:
-        posts = Blog.query.filter_by(owner_id=user)
+        post_ids = []
+        og_posts = Blog.query.filter_by(owner_id=user)
+        for post in og_posts:
+            post_ids.append(post.id)
+        post_ids.reverse()
+        for num in post_ids:
+            posts.append(Blog.query.filter_by(id=num).first())        
     else:
         count = len(Blog.query.all())
         for num in range(count, 0, -1):
